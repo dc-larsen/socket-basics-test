@@ -30,7 +30,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run Socket Basics scan
-        uses: SocketDev/socket-basics@v1.0.26
+        uses: SocketDev/socket-basics@1.0.26
         env:
           # This should allow upload without loading dashboard config
           SOCKET_ORG: socketdev-demo
