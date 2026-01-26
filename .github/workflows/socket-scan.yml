@@ -1,0 +1,41 @@
+name: Socket Basics Container Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  discover-dockerfiles:
+    runs-on: ubuntu-latest
+    outputs:
+      dockerfiles: ${{ steps.discover.outputs.dockerfiles }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Discover Dockerfiles dynamically
+        id: discover
+        run: |
+          # Find all Dockerfiles in the repo
+          DOCKERFILES=$(find . -name 'Dockerfile*' -type f | sed 's|^\./||' | tr '\n' ',' | sed 's/,$//')
+          echo "Found Dockerfiles: $DOCKERFILES"
+          echo "dockerfiles=$DOCKERFILES" >> $GITHUB_OUTPUT
+
+  socket-scan:
+    needs: discover-dockerfiles
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Socket Basics scan
+        uses: SocketDev/socket-basics@v1.0.26
+        env:
+          # This should allow upload without loading dashboard config
+          SOCKET_ORG: socketdev-demo
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          socket_security_api_key: ${{ secrets.SOCKET_SECURITY_API_KEY }}
+          dockerfiles: ${{ needs.discover-dockerfiles.outputs.dockerfiles }}
+          trivy_vuln_enabled: true

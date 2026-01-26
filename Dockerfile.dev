@@ -1,0 +1,10 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Dev dockerfile for testing dynamic discovery
+RUN pip install pytest debugpy
+
+COPY . .
+
+CMD ["python", "-m", "pytest"]
