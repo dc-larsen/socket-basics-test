@@ -46,7 +46,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run Socket Basics scan
-        uses: SocketDev/socket-basics@1.0.26
+        uses: SocketDev/socket-basics@fix/jira-dashboard-config-params
         env:
           SOCKET_ORG: david-s-github
         with:
