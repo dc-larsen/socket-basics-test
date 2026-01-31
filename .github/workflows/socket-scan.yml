@@ -32,8 +32,7 @@ jobs:
       - name: Run Socket Basics scan
         uses: SocketDev/socket-basics@1.0.26
         env:
-          # This should allow upload without loading dashboard config
-          SOCKET_ORG: socketdev-demo
+          SOCKET_ORG: david-s-github
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           socket_security_api_key: ${{ secrets.SOCKET_SECURITY_API_KEY }}
