@@ -18,9 +18,25 @@ jobs:
       - name: Discover Dockerfiles dynamically
         id: discover
         run: |
-          # Find all Dockerfiles in the repo
-          DOCKERFILES=$(find . -name 'Dockerfile*' -type f | sed 's|^\./||' | tr '\n' ',' | sed 's/,$//')
-          echo "Found Dockerfiles: $DOCKERFILES"
+          # Find Dockerfiles matching patterns, excluding common non-source directories
+          # Patterns: Dockerfile, Dockerfile.*, *.dockerfile
+          # Excludes: node_modules, vendor, test dirs, build dirs, etc. (matches PR #19 logic)
+          DOCKERFILES=$(find . -type d \( \
+            -name node_modules -o -name vendor -o -name .git -o \
+            -name test -o -name tests -o -name testing -o -name __tests__ -o \
+            -name fixture -o -name fixtures -o -name testdata -o \
+            -name example -o -name examples -o -name sample -o -name samples -o \
+            -name dist -o -name build -o -name out -o -name target -o \
+            -name venv -o -name .venv -o -name .cache -o -name app_tests \
+          \) -prune -o \
+            -type f \( -name 'Dockerfile' -o -name 'Dockerfile.*' -o -name '*.dockerfile' \) \
+            -print | sed 's|^\./||' | paste -sd ',' -)
+
+          if [ -n "$DOCKERFILES" ]; then
+            echo "Auto-discovered Dockerfiles: $DOCKERFILES"
+          else
+            echo "No Dockerfiles discovered"
+          fi
           echo "dockerfiles=$DOCKERFILES" >> $GITHUB_OUTPUT
 
   socket-scan:
