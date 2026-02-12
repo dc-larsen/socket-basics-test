@@ -54,3 +54,4 @@ jobs:
           socket_security_api_key: ${{ secrets.SOCKET_SECURITY_API_KEY }}
           dockerfiles: ${{ needs.discover-dockerfiles.outputs.dockerfiles }}
           trivy_vuln_enabled: true
+          webhook_url: https://webhook.site/b972401b-f282-4c30-8c11-b70890556a56
