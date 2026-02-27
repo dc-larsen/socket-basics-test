@@ -19,8 +19,6 @@ jobs:
         id: discover
         run: |
           # Find Dockerfiles matching patterns, excluding common non-source directories
-          # Patterns: Dockerfile, Dockerfile.*, *.dockerfile
-          # Excludes: node_modules, vendor, test dirs, build dirs, etc. (matches PR #19 logic)
           DOCKERFILES=$(find . -type d \( \
             -name node_modules -o -name vendor -o -name .git -o \
             -name test -o -name tests -o -name testing -o -name __tests__ -o \
@@ -46,12 +44,15 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run Socket Basics scan
-        uses: SocketDev/socket-basics@fix/jira-dashboard-config-params
+        uses: SocketDev/socket-basics@main
         env:
           SOCKET_ORG: david-s-github
+          SOCKET_BASICS_SEVERITIES: critical,high,medium,low
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           socket_security_api_key: ${{ secrets.SOCKET_SECURITY_API_KEY }}
           dockerfiles: ${{ needs.discover-dockerfiles.outputs.dockerfiles }}
           trivy_vuln_enabled: true
-          webhook_url: https://webhook.site/b972401b-f282-4c30-8c11-b70890556a56
+          python_sast_enabled: true
+          secret_scanning_enabled: true
+          verbose: true
