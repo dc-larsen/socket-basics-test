@@ -8,37 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  discover-dockerfiles:
-    runs-on: ubuntu-latest
-    outputs:
-      dockerfiles: ${{ steps.discover.outputs.dockerfiles }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Discover Dockerfiles dynamically
-        id: discover
-        run: |
-          # Find Dockerfiles matching patterns, excluding common non-source directories
-          DOCKERFILES=$(find . -type d \( \
-            -name node_modules -o -name vendor -o -name .git -o \
-            -name test -o -name tests -o -name testing -o -name __tests__ -o \
-            -name fixture -o -name fixtures -o -name testdata -o \
-            -name example -o -name examples -o -name sample -o -name samples -o \
-            -name dist -o -name build -o -name out -o -name target -o \
-            -name venv -o -name .venv -o -name .cache -o -name app_tests \
-          \) -prune -o \
-            -type f \( -name 'Dockerfile' -o -name 'Dockerfile.*' -o -name '*.dockerfile' \) \
-            -print | sed 's|^\./||' | paste -sd ',' -)
-
-          if [ -n "$DOCKERFILES" ]; then
-            echo "Auto-discovered Dockerfiles: $DOCKERFILES"
-          else
-            echo "No Dockerfiles discovered"
-          fi
-          echo "dockerfiles=$DOCKERFILES" >> $GITHUB_OUTPUT
-
   socket-scan:
-    needs: discover-dockerfiles
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51,8 +21,10 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           socket_security_api_key: ${{ secrets.SOCKET_SECURITY_API_KEY }}
-          dockerfiles: ${{ needs.discover-dockerfiles.outputs.dockerfiles }}
+          dockerfiles: Dockerfile
           trivy_vuln_enabled: true
-          python_sast_enabled: true
+          javascript_sast_enabled: true
           secret_scanning_enabled: true
+          socket_tier_1_enabled: true
+          all_rules_enabled: true
           verbose: true
