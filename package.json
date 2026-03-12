@@ -60,6 +60,12 @@
     "should": "^8.3.1",
     "zaproxy": "^0.2.0"
   },
+  "resolutions": {
+    "underscore": "npm:lodash@4.17.21"
+  },
+  "overrides": {
+    "underscore": "npm:lodash@4.17.21"
+  },
   "repository": "https://github.com/OWASP/NodejsGoat",
   "license": "Apache 2.0"
 }
